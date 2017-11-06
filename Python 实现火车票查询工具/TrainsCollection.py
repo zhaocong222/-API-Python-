@@ -5,9 +5,9 @@ from prettytable import PrettyTable
 
 class TrainCollection(object):
     #空格分割
-    header = '车次 车站 时间 历时 一等 二等 软卧 硬卧 硬座 无座'.split()
+    header = '车次 车站 时间 历时'.split()
 
-    def __init__(self,available_trains):
+    def __init__(self,available_trains,city):
         """查询到的火车班次集合
 
         :param available_trains: 一个列表, 包含可获得的火车班次, 每个
@@ -15,40 +15,40 @@ class TrainCollection(object):
         :param options: 查询的选项, 如高铁, 动车, etc...
         """
         self.available_trains = available_trains
-        #self.options = options
+        self.city = city
     
-    def _get_duration(self,raw_train):
+    def _get_duration(self,duration):
         
-
+        duration = duration.replace(':','小时') + '分'
+        if duration.startswith('00'):
+            return duration[4:] #只有分就从第4个位置开始截取
+        if duration.startswith('0'):
+            return duration[1:] #从第1个位置开始截取
+        return duration
+        
+    @property
     def trains(self):
 
         for raw_train in self.available_trains:
+            
             res = raw_train.split('|')
-            if (res[1] == '预订'):
-                train = [
-                    res[3],  #车次
-                    '-'.join([res[6],res[7]]), #车站
-                    '-'.join([res[8],res[9]]), #时间
-                    self._get_duration(raw_train),#历时
-                                                #一等
-                                                #二等
-                                                #软卧
-                                                #硬卧
-                                                #硬座
-                                                #无座
-                ]
-                print(res)
-        
+            train = [
+                res[3],  #车次
+                '-'.join([self.city.get(res[6]),self.city.get(res[7])]), #车站
+                '-'.join([res[8],res[9]]), #时间
+                self._get_duration(res[10]),#历时
+            ]
+            
+            yield train
+
     def pretty_print(self):
-        '''
-        pt = PrettyTable()
-        #添加头行
-        pt._set_field_names(self.header)
+
+        pt = PrettyTable(self.header)
         #增加数据
         for train in self.trains:
+        #pt.add_row(['g123','武汉-长沙','xxx','xxx'])
             pt.add_row(train)
         #打印
         print(pt)
-        '''
         
 

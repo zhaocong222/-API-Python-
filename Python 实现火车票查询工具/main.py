@@ -50,7 +50,7 @@ def show():
     available_trains = r.json()['data']['result']
     city    = r.json()['data']['map']
     #解析数据并显示
-    TrainCollection(available_trains).trains()
+    TrainCollection(available_trains,city).pretty_print()
 
 if __name__ == '__main__':
     show()
