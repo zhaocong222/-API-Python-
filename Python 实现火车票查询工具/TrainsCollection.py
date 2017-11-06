@@ -26,6 +26,7 @@ class TrainCollection(object):
             return duration[1:] #从第1个位置开始截取
         return duration
         
+    # @property 配合 yield高级用法
     @property
     def trains(self):
 
